@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TrioConnect")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eeb128a553d7603069282164ddbc0d585af176f7")]
 [assembly: System.Reflection.AssemblyProductAttribute("TrioConnect")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TrioConnect")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -24,6 +24,7 @@ D:\DEV\aws_api\TrioConnect\obj\Debug\net8.0\TrioConnect.AssemblyInfo.cs
 D:\DEV\aws_api\TrioConnect\obj\Debug\net8.0\TrioConnect.csproj.CoreCompileInputs.cache
 D:\DEV\aws_api\TrioConnect\obj\Debug\net8.0\TrioConnect.MvcApplicationPartsAssemblyInfo.cs
 D:\DEV\aws_api\TrioConnect\obj\Debug\net8.0\TrioConnect.MvcApplicationPartsAssemblyInfo.cache
+D:\DEV\aws_api\TrioConnect\obj\Debug\net8.0\TrioConnect.sourcelink.json
 D:\DEV\aws_api\TrioConnect\obj\Debug\net8.0\staticwebassets.build.json
 D:\DEV\aws_api\TrioConnect\obj\Debug\net8.0\staticwebassets.development.json
 D:\DEV\aws_api\TrioConnect\obj\Debug\net8.0\staticwebassets\msbuild.TrioConnect.Microsoft.AspNetCore.StaticWebAssets.props

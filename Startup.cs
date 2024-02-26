@@ -20,10 +20,14 @@ namespace TrioConnect
         {
             // Configure o serviço de banco de dados usando Entity Framework Core com o provedor PostgreSQL
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql("DefaultConnection", npgsqlOptionsAction: sqlOptions =>
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), npgsqlOptionsAction: sqlOptions =>
                 {
                     sqlOptions?.SetPostgresVersion(new Version(9, 6));
                 }));
+
+            services.AddScoped<TemaRepository>();
+            services.AddScoped<PostagemRepository>();
+            services.AddScoped<UsuarioRepository>();
 
             // Configurar o Swagger
             services.AddSwaggerGen(c =>
@@ -37,7 +41,7 @@ namespace TrioConnect
                     {
                         Name = "Clayton Rocha",
                         Email = "clayton.will@gmail.com",
-                        Url = new Uri("https://example.com")
+                        Url = new Uri("https://github.com/clayton-oly")
                     }
                 });
             });

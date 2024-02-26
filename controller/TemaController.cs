@@ -1,125 +1,100 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TrioConnect.Data;
 using TrioConnect.model;
 
-[Route("api/[controller]")]
-[ApiController]
-public class TemaController : ControllerBase
+namespace TrioConnect.Controllers
 {
-    private readonly ApplicationDbContext _context;
-
-    public TemaController(ApplicationDbContext context)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class TemaController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly TemaRepository _temaRepository;
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Tema>>> GetTemas()
-    {
-        return await _context.Temas.ToListAsync();
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Tema>> GetTema(int id)
-    {
-        var tema = await _context.Temas.FindAsync(id);
-
-        if (tema == null)
+        public TemaController(TemaRepository temaRepository)
         {
-            return NotFound();
+            _temaRepository = temaRepository;
         }
 
-        return tema;
-    }
-
-
-    [HttpPost]
-    public async Task<ActionResult<Tema>> PostTema(Tema tema)
-    {
-        // Verificar se a descrição é nula ou vazia
-        if (string.IsNullOrWhiteSpace(tema.Descricao))
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Tema>>> GetTemas()
         {
-            return BadRequest("O campo Descrição é obrigatório.");
+            var temas = await _temaRepository.GetAllTemasAsync();
+            return Ok(temas);
         }
 
-        // Verificar se a descrição tem pelo menos 3 caracteres
-        if (tema.Descricao.Length < 3)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Tema>> GetTema(int id)
         {
-            return BadRequest("O campo Descrição deve conter pelo menos 3 caracteres.");
-        }
+            var tema = await _temaRepository.GetTemaByIdAsync(id);
 
-        // Se todas as validações passarem, adicionar o novo tema ao contexto
-        _context.Temas.Add(tema);
-
-        // Salvar as mudanças no banco de dados
-        await _context.SaveChangesAsync();
-
-        // Retornar o novo tema criado
-        return CreatedAtAction(nameof(GetTema), new { id = tema.ID }, tema);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutTema(int id, Tema tema)
-    {
-        if (id != tema.ID)
-        {
-            return BadRequest();
-        }
-
-        // Verificar se a descrição é nula ou vazia
-        if (string.IsNullOrWhiteSpace(tema.Descricao))
-        {
-            return BadRequest("O campo Descrição é obrigatório.");
-        }
-
-        // Verificar se a descrição tem pelo menos 3 caracteres
-        if (tema.Descricao.Length < 3)
-        {
-            return BadRequest("O campo Descrição deve conter pelo menos 3 caracteres.");
-        }
-
-        _context.Entry(tema).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!TemaExists(id))
+            if (tema == null)
             {
                 return NotFound();
             }
-            else
+
+            return tema;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Tema>> PostTema(Tema tema)
+        {
+            try
             {
-                throw;
+                var createdTema = await _temaRepository.CreateTemaAsync(tema);
+                return CreatedAtAction(nameof(GetTema), new { id = createdTema.ID }, createdTema);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
             }
         }
 
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTema(int id)
-    {
-        var tema = await _context.Temas.FindAsync(id);
-        if (tema == null)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutTema(int id, Tema tema)
         {
-            return NotFound();
+            if (id != tema.ID)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _temaRepository.UpdateTemaAsync(tema);
+            }
+            catch (TemaNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
+            }
+
+            return NoContent();
         }
 
-        _context.Temas.Remove(tema);
-        await _context.SaveChangesAsync();
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTema(int id)
+        {
+            try
+            {
+                await _temaRepository.DeleteTemaAsync(id);
+            }
+            catch (TemaNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
+            }
 
-        return NoContent();
-    }
-
-    private bool TemaExists(int id)
-    {
-        return _context.Temas.Any(e => e.ID == id);
+            return NoContent();
+        }
     }
 }
