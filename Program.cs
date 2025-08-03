@@ -1,17 +1,72 @@
-namespace SocialApp
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using SocialApp.Data;
+using SocialApp.Interfaces;
+using System.Text.Json.Serialization;
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+var builder = WebApplication.CreateBuilder(args);
+
+// Configuração do banco de dados
+builder.Services.AddDbContext<SocialAppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), npgsqlOptionsAction: sqlOptions =>
+    {
+        sqlOptions?.SetPostgresVersion(new Version(9, 6));
+    }));
+
+// Injeção de dependência
+builder.Services.AddScoped<ITemaRepository, TemaRepository>();
+builder.Services.AddScoped<IPostagemRepository, PostagemRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
+// Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Projeto AWS API",
+        Version = "v1",
+        Description = "Esta é a documentação da minha API",
+        Contact = new OpenApiContact
+        {
+            Name = "Clayton Rocha",
+            Email = "clayton.will@gmail.com",
+            Url = new Uri("https://github.com/clayton-oly")
+        }
+    });
+});
+
+// Controllers + JSON config
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
+
+var app = builder.Build();
+
+// Middleware
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Projeto AWS API V1");
+});
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
