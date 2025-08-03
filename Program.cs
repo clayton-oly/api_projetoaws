@@ -1,4 +1,4 @@
-namespace TrioConnect
+namespace SocialApp
 {
     public class Program
     {

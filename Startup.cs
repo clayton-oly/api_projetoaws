@@ -1,11 +1,9 @@
-using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
-using TrioConnect.Data;
-using System;
-using System.Text.Json;
+using Microsoft.OpenApi.Models;
+using SocialApp.Data;
 using System.Text.Json.Serialization;
 
-namespace TrioConnect
+namespace SocialApp
 {
     public class Startup
     {
@@ -19,7 +17,7 @@ namespace TrioConnect
         public void ConfigureServices(IServiceCollection services)
         {
             // Configure o serviço de banco de dados usando Entity Framework Core com o provedor PostgreSQL
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<SocialAppDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), npgsqlOptionsAction: sqlOptions =>
                 {
                     sqlOptions?.SetPostgresVersion(new Version(9, 6));
