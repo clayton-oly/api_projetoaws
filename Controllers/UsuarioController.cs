@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Interfaces;
 using SocialApp.model;
+using SocialApp.ViewModels;
 
 namespace SocialApp.Controllers
 {
@@ -16,14 +17,14 @@ namespace SocialApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<UsuarioViewModel>>> GetUsuarios()
         {
             var usuarios = await _usuarioRepository.GetAllUsuariosAsync();
             return Ok(usuarios);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(int id)
+        public async Task<ActionResult<UsuarioViewModel>> GetUsuario(int id)
         {
             var usuario = await _usuarioRepository.GetUsuarioByIdAsync(id);
 
@@ -36,7 +37,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
+        public async Task<ActionResult<UsuarioViewModel>> PostUsuario(UsuarioViewModel usuario)
         {
             try
             {
@@ -50,7 +51,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
+        public async Task<IActionResult> PutUsuario(int id, UsuarioViewModel usuario)
         {
             if (id != usuario.ID)
             {

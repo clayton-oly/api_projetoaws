@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Interfaces;
-using SocialApp.model;
+using SocialApp.ViewModels;
 
 namespace SocialApp.Controllers
 {
@@ -16,14 +16,14 @@ namespace SocialApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tema>>> GetTemas()
+        public async Task<ActionResult<IEnumerable<TemaViewModel>>> GetTemas()
         {
             var temas = await _temaRepository.GetAllTemasAsync();
             return Ok(temas);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Tema>> GetTema(int id)
+        public async Task<ActionResult<TemaViewModel>> GetTema(int id)
         {
             var tema = await _temaRepository.GetTemaByIdAsync(id);
 
@@ -36,7 +36,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Tema>> PostTema(Tema tema)
+        public async Task<ActionResult<TemaViewModel>> PostTema(TemaViewModel tema)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTema(int id, Tema tema)
+        public async Task<IActionResult> PutTema(int id, TemaViewModel tema)
         {
             if (id != tema.ID)
             {

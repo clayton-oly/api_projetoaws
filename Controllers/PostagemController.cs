@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Interfaces;
+using SocialApp.ViewModels;
+
 namespace SocialApp.Controllers
 {
     [Route("api/[controller]")]
@@ -14,7 +16,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Postagem>>> GetPostagens()
+        public async Task<ActionResult<IEnumerable<PostagemViewmodel>>> GetAll()
         {
             var postagens = await _postagemRepository.GetAllPostagensAsync();
             return Ok(postagens);
@@ -22,7 +24,7 @@ namespace SocialApp.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Postagem>> GetPostagem(int id)
+        public async Task<ActionResult<PostagemViewmodel>> GetById(int id)
         {
             var postagem = await _postagemRepository.GetPostagemByIdAsync(id);
 
@@ -35,7 +37,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Postagem>> CriarPostagem(Postagem postagem)
+        public async Task<ActionResult<PostagemViewmodel>> Create(PostagemViewmodel postagem)
         {
             try
             {
@@ -73,7 +75,7 @@ namespace SocialApp.Controllers
 
                 // Chamada ao repositório para criar a postagem
                 var createdPostagem = await _postagemRepository.CreatePostagemAsync(postagem);
-                return CreatedAtAction(nameof(GetPostagem), new { id = createdPostagem.ID }, createdPostagem);
+                return CreatedAtAction(nameof(GetById), new { id = createdPostagem.ID }, createdPostagem);
             }
             catch (Exception ex)
             {
@@ -82,7 +84,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPostagem(int id, Postagem postagem)
+        public async Task<IActionResult> PutPostagem(int id, PostagemViewmodel postagem)
         {
             if (id != postagem.ID)
             {
