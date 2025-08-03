@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SocialApp.Data;
+using SocialApp.Interfaces;
 using SocialApp.model;
 
-public class TemaRepository
+public class TemaRepository : ITemaRepository
 {
     private readonly SocialAppDbContext _context;
 

@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SocialApp;
 using SocialApp.Data;
+using SocialApp.Interfaces;
 using SocialApp.model;
 
-public class PostagemRepository
+public class PostagemRepository : IPostagemRepository
 {
     private readonly SocialAppDbContext _context;
 

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SocialApp.Data;
+using SocialApp.Interfaces;
 using System.Text.Json.Serialization;
 
 namespace SocialApp
@@ -16,18 +17,16 @@ namespace SocialApp
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Configure o serviço de banco de dados usando Entity Framework Core com o provedor PostgreSQL
             services.AddDbContext<SocialAppDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), npgsqlOptionsAction: sqlOptions =>
                 {
                     sqlOptions?.SetPostgresVersion(new Version(9, 6));
                 }));
 
-            services.AddScoped<TemaRepository>();
-            services.AddScoped<PostagemRepository>();
-            services.AddScoped<UsuarioRepository>();
+            services.AddScoped<ITemaRepository, TemaRepository>();
+            services.AddScoped<IPostagemRepository, PostagemRepository>();
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
-            // Configurar o Swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -44,7 +43,6 @@ namespace SocialApp
                 });
             });
 
-            // Configurar opções para serialização JSON
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
@@ -63,7 +61,6 @@ namespace SocialApp
                 app.UseHsts();
             }
 
-            // Adicionando o Swagger middleware aqui para estar disponível em todos os ambientes
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

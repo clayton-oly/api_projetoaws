@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SocialApp.Interfaces;
 using SocialApp.model;
 
 namespace SocialApp.Controllers
@@ -7,9 +8,9 @@ namespace SocialApp.Controllers
     [ApiController]
     public class TemaController : ControllerBase
     {
-        private readonly TemaRepository _temaRepository;
+        private readonly ITemaRepository _temaRepository;
 
-        public TemaController(TemaRepository temaRepository)
+        public TemaController(ITemaRepository temaRepository)
         {
             _temaRepository = temaRepository;
         }

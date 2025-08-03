@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
+using SocialApp.Interfaces;
 namespace SocialApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class PostagemController : ControllerBase
     {
-        private readonly PostagemRepository _postagemRepository;
+        private readonly IPostagemRepository _postagemRepository;
 
-        public PostagemController(PostagemRepository postagemRepository)
+        public PostagemController(IPostagemRepository postagemRepository)
         {
             _postagemRepository = postagemRepository;
         }

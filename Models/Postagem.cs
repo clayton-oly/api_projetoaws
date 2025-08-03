@@ -24,7 +24,5 @@ namespace SocialApp
 
         public int TemaID { get; set; }
         public Tema? Tema { get; set; }
-
-
     }
 }

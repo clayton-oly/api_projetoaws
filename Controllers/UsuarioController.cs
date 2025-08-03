@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SocialApp.Interfaces;
 using SocialApp.model;
 
 namespace SocialApp.Controllers
@@ -7,9 +8,9 @@ namespace SocialApp.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        private readonly UsuarioRepository _usuarioRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuarioController(UsuarioRepository usuarioRepository)
+        public UsuarioController(IUsuarioRepository usuarioRepository)
         {
             _usuarioRepository = usuarioRepository;
         }
