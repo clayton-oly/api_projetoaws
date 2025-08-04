@@ -8,24 +8,24 @@ namespace SocialApp.Controllers
     [ApiController]
     public class TemaController : ControllerBase
     {
-        private readonly ITemaRepository _temaRepository;
+        private readonly ITemaService _temaService;
 
-        public TemaController(ITemaRepository temaRepository)
+        public TemaController(ITemaService temaService)
         {
-            _temaRepository = temaRepository;
+            _temaService = temaService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TemaViewModel>>> GetTemas()
         {
-            var temas = await _temaRepository.GetAllTemasAsync();
+            var temas = await _temaService.GetAllTemasAsync();
             return Ok(temas);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TemaViewModel>> GetTema(int id)
         {
-            var tema = await _temaRepository.GetTemaByIdAsync(id);
+            var tema = await _temaService.GetTemaByIdAsync(id);
 
             if (tema == null)
             {
@@ -40,8 +40,8 @@ namespace SocialApp.Controllers
         {
             try
             {
-                var createdTema = await _temaRepository.CreateTemaAsync(tema);
-                return CreatedAtAction(nameof(GetTema), new { id = createdTema.ID }, createdTema);
+                var createdTema = await _temaService.CreateTemaAsync(tema);
+                return CreatedAtAction(nameof(GetTema), new { id = createdTema.Value.ID }, createdTema);
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace SocialApp.Controllers
 
             try
             {
-                await _temaRepository.UpdateTemaAsync(tema);
+                await _temaService.UpdateTemaAsync(id, tema);
             }
             catch (TemaNotFoundException)
             {
@@ -78,7 +78,7 @@ namespace SocialApp.Controllers
         {
             try
             {
-                await _temaRepository.DeleteTemaAsync(id);
+                await _temaService.DeleteTemaAsync(id);
             }
             catch (TemaNotFoundException)
             {
