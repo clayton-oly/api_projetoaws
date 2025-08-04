@@ -19,7 +19,10 @@ namespace SocialApp.Services
             {
                 Id = postagem.ID,
                 Titulo = postagem.Titulo,
-                Texto = postagem.Texto
+                Texto = postagem.Texto,
+                TemaId = postagem.TemaID,
+                UsuarioId = postagem.UsuarioID
+
             };
         }
 
@@ -29,7 +32,9 @@ namespace SocialApp.Services
             {
                 ID = postagemViewModel.Id,
                 Titulo = postagemViewModel.Titulo,
-                Texto = postagemViewModel.Texto
+                Texto = postagemViewModel.Texto,
+                TemaID = postagemViewModel.TemaId,
+                UsuarioID= postagemViewModel.UsuarioId
             };
         }
 

@@ -15,10 +15,8 @@ namespace SocialApp.ViewModels
 
         public DateTime Data { get; set; }
 
-        public int UsuarioID { get; set; }
-        public Usuario? Usuario { get; set; }
+        public int UsuarioId { get; set; }
 
-        public int TemaID { get; set; }
-        public Tema? Tema { get; set; }
+        public int TemaId { get; set; }
     }
 }

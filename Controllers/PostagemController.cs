@@ -10,10 +10,14 @@ namespace SocialApp.Controllers
     public class PostagemController : ControllerBase
     {
         private readonly IPostagemService _postagemService;
+        private readonly ITemaService _temaService;
+        private readonly IUsuarioService _usuarioService;
 
-        public PostagemController(IPostagemService postagemService)
+        public PostagemController(IPostagemService postagemService, ITemaService temaService, IUsuarioService usuarioService)
         {
             _postagemService = postagemService;
+            _temaService = temaService;
+            _usuarioService = usuarioService;
         }
 
         [HttpGet]
@@ -42,36 +46,17 @@ namespace SocialApp.Controllers
         [HttpPost]
         public async Task<ActionResult<PostagemViewModel>> PostPostagem(PostagemViewModel postagemViewModel)
         {
-            if (postagemViewModel == null)
-            {
-                return BadRequest("Dados da postagem não fornecidos.");
-            }
 
-            if (postagemViewModel.UsuarioID == 0 || postagemViewModel.TemaID == 0)
-            {
-                return BadRequest("IDs de usuário e tema são obrigatórios.");
-            }
+            if (postagemViewModel.UsuarioId == 0 || postagemViewModel.TemaId == 0)
+                return BadRequest("Ids de usuário e tema são obrigatórios.");
 
-            //var usuario = await _postagemService.GetUsuarioByIdAsync(postagem.UsuarioID);
-            //var tema = await _postagemService.GetTemaByIdAsync(postagem.TemaID);
-            //if (usuario == null || tema == null)
-            //{
-            //    return BadRequest("Usuário ou tema não encontrado.");
-            //}
+            var usuario = await _usuarioService.GetUsuarioByIdAsync(postagemViewModel.UsuarioId);
+            if (usuario == null)
+                return NotFound("Usuário não encontrado.");
 
-            if (string.IsNullOrEmpty(postagemViewModel.Titulo) || postagemViewModel.Titulo.Length < 3)
-            {
-                return BadRequest("O título é obrigatório e deve ter no mínimo 3 caracteres.");
-            }
-
-            if (string.IsNullOrEmpty(postagemViewModel.Texto) || postagemViewModel.Texto.Length < 10)
-            {
-                return BadRequest("O texto é obrigatório e deve ter no mínimo 10 caracteres.");
-            }
-
-            postagemViewModel.Data = DateTime.UtcNow;
-            //postagem.Usuario = usuario;
-            //postagem.Tema = tema;
+            var tema = await _temaService.GetTemaByIdAsync(postagemViewModel.TemaId);
+            if (tema == null)
+                return NotFound("Tema não encontrado.");
 
             var createdPostagem = await _postagemService.CreatePostagemAsync(postagemViewModel);
             if(createdPostagem == null)
