@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Interfaces;
-using SocialApp.model;
 using SocialApp.ViewModels;
 
 namespace SocialApp.Controllers
@@ -9,24 +8,24 @@ namespace SocialApp.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IUsuarioService _usuarioService;
 
-        public UsuarioController(IUsuarioRepository usuarioRepository)
+        public UsuarioController(IUsuarioService usuarioService)
         {
-            _usuarioRepository = usuarioRepository;
+            _usuarioService = usuarioService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UsuarioViewModel>>> GetUsuarios()
         {
-            var usuarios = await _usuarioRepository.GetAllUsuariosAsync();
+            var usuarios = await _usuarioService.GetAllUsuariosAsync();
             return Ok(usuarios);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<UsuarioViewModel>> GetUsuario(int id)
         {
-            var usuario = await _usuarioRepository.GetUsuarioByIdAsync(id);
+            var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
 
             if (usuario == null)
             {
@@ -41,7 +40,7 @@ namespace SocialApp.Controllers
         {
             try
             {
-                var createdUsuario = await _usuarioRepository.CreateUsuarioAsync(usuario);
+                var createdUsuario = await _usuarioService.CreateUsuarioAsync(usuario);
                 return CreatedAtAction(nameof(GetUsuario), new { id = createdUsuario.ID }, createdUsuario);
             }
             catch (Exception ex)
@@ -60,7 +59,7 @@ namespace SocialApp.Controllers
 
             try
             {
-                await _usuarioRepository.UpdateUsuarioAsync(usuario);
+                await _usuarioService.UpdateUsuarioAsync(id, usuario);
             }
             catch (UsuarioNotFoundException)
             {
@@ -79,7 +78,7 @@ namespace SocialApp.Controllers
         {
             try
             {
-                await _usuarioRepository.DeleteUsuarioAsync(id);
+                await _usuarioService.DeleteUsuarioAsync(id);
             }
             catch (UsuarioNotFoundException)
             {
