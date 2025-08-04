@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace SocialApp.ViewModels
+﻿namespace SocialApp.ViewModels
 {
     public class TemaViewModel
     {

@@ -8,25 +8,25 @@ namespace SocialApp.Controllers
     [ApiController]
     public class PostagemController : ControllerBase
     {
-        private readonly IPostagemRepository _postagemRepository;
+        private readonly IPostagemService _postagemService;
 
-        public PostagemController(IPostagemRepository postagemRepository)
+        public PostagemController(IPostagemService postagemService)
         {
-            _postagemRepository = postagemRepository;
+            _postagemService = postagemService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PostagemViewmodel>>> GetAll()
+        public async Task<ActionResult<IEnumerable<PostagemViewModel>>> GetAll()
         {
-            var postagens = await _postagemRepository.GetAllPostagensAsync();
+            var postagens = await _postagemService.GetAllPostagensAsync();
             return Ok(postagens);
         }
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostagemViewmodel>> GetById(int id)
+        public async Task<ActionResult<PostagemViewModel>> GetById(int id)
         {
-            var postagem = await _postagemRepository.GetPostagemByIdAsync(id);
+            var postagem = await _postagemService.GetPostagemByIdAsync(id);
 
             if (postagem == null)
             {
@@ -37,11 +37,10 @@ namespace SocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PostagemViewmodel>> Create(PostagemViewmodel postagem)
+        public async Task<ActionResult<PostagemViewModel>> Create(PostagemViewModel postagem)
         {
             try
             {
-                // Suas validações existentes
                 if (postagem == null)
                 {
                     return BadRequest("Dados da postagem não fornecidos.");
@@ -52,12 +51,12 @@ namespace SocialApp.Controllers
                     return BadRequest("IDs de usuário e tema são obrigatórios.");
                 }
 
-                var usuario = await _postagemRepository.GetUsuarioByIdAsync(postagem.UsuarioID);
-                var tema = await _postagemRepository.GetTemaByIdAsync(postagem.TemaID);
-                if (usuario == null || tema == null)
-                {
-                    return BadRequest("Usuário ou tema não encontrado.");
-                }
+                //var usuario = await _postagemService.GetUsuarioByIdAsync(postagem.UsuarioID);
+                //var tema = await _postagemService.GetTemaByIdAsync(postagem.TemaID);
+                //if (usuario == null || tema == null)
+                //{
+                //    return BadRequest("Usuário ou tema não encontrado.");
+                //}
 
                 if (string.IsNullOrEmpty(postagem.Titulo) || postagem.Titulo.Length < 3)
                 {
@@ -70,11 +69,11 @@ namespace SocialApp.Controllers
                 }
 
                 postagem.Data = DateTime.UtcNow;
-                postagem.Usuario = usuario;
-                postagem.Tema = tema;
+                //postagem.Usuario = usuario;
+                //postagem.Tema = tema;
 
                 // Chamada ao repositório para criar a postagem
-                var createdPostagem = await _postagemRepository.CreatePostagemAsync(postagem);
+                var createdPostagem = await _postagemService.CreatePostagemAsync(postagem);
                 return CreatedAtAction(nameof(GetById), new { id = createdPostagem.ID }, createdPostagem);
             }
             catch (Exception ex)
@@ -84,7 +83,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPostagem(int id, PostagemViewmodel postagem)
+        public async Task<IActionResult> PutPostagem(int id, PostagemViewModel postagem)
         {
             if (id != postagem.ID)
             {
@@ -93,7 +92,7 @@ namespace SocialApp.Controllers
 
             try
             {
-                await _postagemRepository.UpdatePostagemAsync(postagem);
+                await _postagemService.UpdatePostagemAsync(postagem);
             }
             catch (PostagemNotFoundException)
             {
@@ -112,7 +111,7 @@ namespace SocialApp.Controllers
         {
             try
             {
-                await _postagemRepository.DeletePostagemAsync(id);
+                await _postagemService.DeletePostagemAsync(id);
             }
             catch (PostagemNotFoundException)
             {

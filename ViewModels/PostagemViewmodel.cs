@@ -1,10 +1,9 @@
 ﻿using SocialApp.model;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SocialApp.ViewModels
 {
-    public class PostagemViewmodel
+    public class PostagemViewModel
     {
         public int ID { get; set; }
 
