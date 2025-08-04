@@ -2,21 +2,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SocialApp.Data;
 using SocialApp.Interfaces;
+using SocialApp.Services;
+using System;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configuração do banco de dados
-builder.Services.AddDbContext<SocialAppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), npgsqlOptionsAction: sqlOptions =>
-    {
-        sqlOptions?.SetPostgresVersion(new Version(9, 6));
-    }));
+builder.Services.AddDbContext<SocialAppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Injeção de dependência
 builder.Services.AddScoped<ITemaRepository, TemaRepository>();
 builder.Services.AddScoped<IPostagemRepository, PostagemRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ITemaService, TemaService>();
+builder.Services.AddScoped<IPostagemService, PostagemService>();
 
 // Swagger
 builder.Services.AddSwaggerGen(c =>
@@ -36,12 +37,24 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Controllers + JSON config
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-});
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<SocialAppDbContext>();
+        context.Database.Migrate();
+    }
+}
+
 
 // Middleware
 if (app.Environment.IsDevelopment())
@@ -57,7 +70,7 @@ else
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Projeto AWS API V1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Projeto SocialApp API V1");
 });
 
 app.UseHttpsRedirection();

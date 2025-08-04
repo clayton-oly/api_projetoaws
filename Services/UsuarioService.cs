@@ -24,48 +24,53 @@ namespace SocialApp.Services
             };
         }
 
-        private Usuario MapToModel(UsuarioViewModel usuario)
+        private Usuario MapToModel(UsuarioViewModel usuarioViewModel)
         {
             return new Usuario
             {
-                ID = usuario.ID,
-                Nome = usuario.Nome,
-                Email = usuario.Email,
-                Foto = usuario.Foto
+                ID = usuarioViewModel.ID,
+                Nome = usuarioViewModel.Nome,
+                Email = usuarioViewModel.Email,
+                Foto = usuarioViewModel.Foto
             };
         }
 
-        public async Task<List<UsuarioViewModel>> GetAllUsuariosAsync()
+        public async Task<IEnumerable<UsuarioViewModel>> GetAllUsuariosAsync()
         {
-            var usuarios = await _usuarioRepository.GetAllUsuariosAsync();
+            var usuarios = await _usuarioRepository.GetAllUsuariosAsync() ?? new List<Usuario>();
             return usuarios.Select(MapToViewModel).ToList();
         }
 
+
         public async Task<UsuarioViewModel> GetUsuarioByIdAsync(int id)
         {
-            var usuario = await _usuarioRepository.GetUsuarioByIdAsync(id);
-
-            return MapToViewModel(usuario);
+            return await _usuarioRepository.GetUsuarioByIdAsync(id) is { } usuario
+                ? MapToViewModel(usuario)
+                : null;
         }
 
         public async Task<UsuarioViewModel> CreateUsuarioAsync(UsuarioViewModel usuarioViewModel)
         {
             var usuario = MapToModel(usuarioViewModel);
-            var createdUsuario = await _usuarioRepository.CreateUsuarioAsync(usuario);
 
-            return MapToViewModel(createdUsuario);
+            var usuarioCreate = await _usuarioRepository.CreateUsuarioAsync(usuario);
+
+            return usuarioCreate != null
+                ? MapToViewModel(usuarioCreate)
+                : null;
+
         }
 
         public async Task UpdateUsuarioAsync(int id, UsuarioViewModel usuarioViewModel)
         {
             var usuario = MapToModel(usuarioViewModel);
-            
+
             await _usuarioRepository.UpdateUsuarioAsync(usuario);
         }
-
-        public async Task DeleteUsuarioAsync(int id)
+        
+        public async Task<bool> DeleteUsuarioAsync(int id)
         {
-           await _usuarioRepository.DeleteUsuarioAsync(id);
+            return await _usuarioRepository.DeleteUsuarioAsync(id);
         }
     }
 }

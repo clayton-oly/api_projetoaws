@@ -19,7 +19,7 @@ public class UsuarioRepository : IUsuarioRepository
 
     public async Task<Usuario> GetUsuarioByIdAsync(int id)
     {
-        return await _context.Usuarios.FindAsync(id);
+      return await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.ID == id);
     }
 
     public async Task<Usuario> CreateUsuarioAsync(Usuario usuario)
@@ -35,22 +35,14 @@ public class UsuarioRepository : IUsuarioRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteUsuarioAsync(int id)
+    public async Task<bool> DeleteUsuarioAsync(int id)
     {
-        var usuarioToDelete = await _context.Usuarios.FindAsync(id);
-        if (usuarioToDelete == null)
-        {
-            throw new UsuarioNotFoundException();
-        }
+        var usuario = await _context.Usuarios.FindAsync(id);
+        if (usuario == null) return false;
 
-        _context.Usuarios.Remove(usuarioToDelete);
+        _context.Usuarios.Remove(usuario);
         await _context.SaveChangesAsync();
+        return true;
     }
 }
 
-public class UsuarioNotFoundException : Exception
-{
-    public UsuarioNotFoundException() : base("Usuário não encontrado.")
-    {
-    }
-}

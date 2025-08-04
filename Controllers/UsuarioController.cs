@@ -16,80 +16,63 @@ namespace SocialApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UsuarioViewModel>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<UsuarioViewModel>>> GetAllUsuarios()
         {
             var usuarios = await _usuarioService.GetAllUsuariosAsync();
+
+            if (usuarios == null || !usuarios.Any())
+                return NoContent();
+
             return Ok(usuarios);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UsuarioViewModel>> GetUsuario(int id)
+        public async Task<ActionResult<UsuarioViewModel>> GetUsuarioById(int id)
         {
             var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
 
             if (usuario == null)
-            {
-                return NotFound();
-            }
+                return NotFound("Usuário não encontrado.");
 
             return usuario;
         }
 
         [HttpPost]
-        public async Task<ActionResult<UsuarioViewModel>> PostUsuario(UsuarioViewModel usuario)
+        public async Task<ActionResult<UsuarioViewModel>> PostUsuario(UsuarioViewModel usuarioViewModel)
         {
-            try
-            {
-                var createdUsuario = await _usuarioService.CreateUsuarioAsync(usuario);
-                return CreatedAtAction(nameof(GetUsuario), new { id = createdUsuario.ID }, createdUsuario);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
-            }
+            var createdUsuario = await _usuarioService.CreateUsuarioAsync(usuarioViewModel);
+
+            if (createdUsuario == null)
+                return BadRequest("Erro ao criar usuário.");
+
+            return CreatedAtAction(nameof(GetUsuarioById), new { id = createdUsuario.ID }, createdUsuario);
         }
 
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(int id, UsuarioViewModel usuario)
+        public async Task<IActionResult> PutUsuario(int id, UsuarioViewModel usuarioViewModel)
         {
-            if (id != usuario.ID)
-            {
-                return BadRequest();
-            }
+            if (id != usuarioViewModel.ID)
+                return BadRequest("O ID informado não corresponde ao usuário.");
 
-            try
-            {
-                await _usuarioService.UpdateUsuarioAsync(id, usuario);
-            }
-            catch (UsuarioNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
-            }
+            var usuarioExistente = await _usuarioService.GetUsuarioByIdAsync(id);
 
-            return NoContent();
+            if (usuarioExistente == null)
+                return NotFound("Usuário não encontrado.");
+
+            await _usuarioService.UpdateUsuarioAsync(id, usuarioViewModel);
+            return Ok("Usuário atualizado com sucesso!");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
-            try
-            {
-                await _usuarioService.DeleteUsuarioAsync(id);
-            }
-            catch (UsuarioNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
-            }
+            var sucesso = await _usuarioService.DeleteUsuarioAsync(id);
 
-            return NoContent();
+            if (!sucesso)
+                return NotFound("Usuário não encontrado.");
+
+            return NoContent(); 
         }
     }
 }
