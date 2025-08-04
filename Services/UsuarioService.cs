@@ -17,7 +17,7 @@ namespace SocialApp.Services
         {
             return new UsuarioViewModel
             {
-                ID = usuario.ID,
+                Id = usuario.ID,
                 Nome = usuario.Nome,
                 Email = usuario.Email,
                 Foto = usuario.Foto
@@ -28,7 +28,7 @@ namespace SocialApp.Services
         {
             return new Usuario
             {
-                ID = usuarioViewModel.ID,
+                ID = usuarioViewModel.Id,
                 Nome = usuarioViewModel.Nome,
                 Email = usuarioViewModel.Email,
                 Foto = usuarioViewModel.Foto
@@ -40,7 +40,6 @@ namespace SocialApp.Services
             var usuarios = await _usuarioRepository.GetAllUsuariosAsync() ?? new List<Usuario>();
             return usuarios.Select(MapToViewModel).ToList();
         }
-
 
         public async Task<UsuarioViewModel> GetUsuarioByIdAsync(int id)
         {
@@ -58,16 +57,15 @@ namespace SocialApp.Services
             return usuarioCreate != null
                 ? MapToViewModel(usuarioCreate)
                 : null;
-
         }
 
-        public async Task UpdateUsuarioAsync(int id, UsuarioViewModel usuarioViewModel)
+        public async Task UpdateUsuarioAsync(UsuarioViewModel usuarioViewModel)
         {
             var usuario = MapToModel(usuarioViewModel);
 
             await _usuarioRepository.UpdateUsuarioAsync(usuario);
         }
-        
+
         public async Task<bool> DeleteUsuarioAsync(int id)
         {
             return await _usuarioRepository.DeleteUsuarioAsync(id);

@@ -18,4 +18,4 @@ WORKDIR /app
 COPY --from=build /app/out ./
 
 # Comando para iniciar o aplicativo
-CMD ["dotnet", "TrioConnect.dll"]
+CMD ["dotnet", "SocialApp.dll"]

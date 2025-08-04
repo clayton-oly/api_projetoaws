@@ -20,7 +20,7 @@ public class PostagemRepository : IPostagemRepository
 
     public async Task<Postagem> GetPostagemByIdAsync(int id)
     {
-        return await _context.Postagens.FindAsync(id);
+        return await _context.Postagens.AsNoTracking().FirstOrDefaultAsync(p => p.ID == id);
     }
 
     public async Task<Postagem> CreatePostagemAsync(Postagem postagem)
@@ -36,32 +36,13 @@ public class PostagemRepository : IPostagemRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeletePostagemAsync(int id)
+    public async Task<bool> DeletePostagemAsync(int id)
     {
-        var postagemToDelete = await _context.Postagens.FindAsync(id);
-        if (postagemToDelete == null)
-        {
-            throw new PostagemNotFoundException();
-        }
+        var postagem = await _context.Postagens.FindAsync(id);
+        if (postagem == null) return false;
 
-        _context.Postagens.Remove(postagemToDelete);
+        _context.Postagens.Remove(postagem);
         await _context.SaveChangesAsync();
-    }
-
-    public async Task<Usuario> GetUsuarioByIdAsync(int id)
-    {
-        return await _context.Usuarios.FindAsync(id);
-    }
-
-    public async Task<Tema> GetTemaByIdAsync(int id)
-    {
-        return await _context.Temas.FindAsync(id);
-    }
-}
-
-public class PostagemNotFoundException : Exception
-{
-    public PostagemNotFoundException() : base("Postagem não encontrada.")
-    {
+        return true;
     }
 }

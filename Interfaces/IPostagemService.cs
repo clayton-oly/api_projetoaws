@@ -8,6 +8,6 @@ namespace SocialApp.Interfaces
         Task<PostagemViewModel> GetPostagemByIdAsync(int id);
         Task<PostagemViewModel> CreatePostagemAsync(PostagemViewModel postagemViewModel);
         Task UpdatePostagemAsync(PostagemViewModel postagemViewModel);
-        Task DeletePostagemAsync(int id);
+        Task<bool> DeletePostagemAsync(int id);
     }
 }

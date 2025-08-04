@@ -45,22 +45,22 @@ namespace SocialApp.Controllers
             if (createdUsuario == null)
                 return BadRequest("Erro ao criar usuário.");
 
-            return CreatedAtAction(nameof(GetUsuarioById), new { id = createdUsuario.ID }, createdUsuario);
+            return CreatedAtAction(nameof(GetUsuarioById), new { id = createdUsuario.Id }, createdUsuario);
         }
 
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsuario(int id, UsuarioViewModel usuarioViewModel)
         {
-            if (id != usuarioViewModel.ID)
-                return BadRequest("O ID informado não corresponde ao usuário.");
+            if (id != usuarioViewModel.Id)
+                return BadRequest("O Id informado não corresponde ao usuário.");
 
             var usuarioExistente = await _usuarioService.GetUsuarioByIdAsync(id);
 
             if (usuarioExistente == null)
                 return NotFound("Usuário não encontrado.");
 
-            await _usuarioService.UpdateUsuarioAsync(id, usuarioViewModel);
+            await _usuarioService.UpdateUsuarioAsync(usuarioViewModel);
             return Ok("Usuário atualizado com sucesso!");
         }
 

@@ -19,7 +19,7 @@ public class TemaRepository : ITemaRepository
 
     public async Task<Tema> GetTemaByIdAsync(int id)
     {
-        return await _context.Temas.FindAsync(id);
+        return await _context.Temas.AsNoTracking().FirstOrDefaultAsync(t => t.ID == id);
     }
 
     public async Task<Tema> CreateTemaAsync(Tema tema)
@@ -35,22 +35,13 @@ public class TemaRepository : ITemaRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteTemaAsync(int id)
+    public async Task<bool> DeleteTemaAsync(int id)
     {
-        var temaToDelete = await _context.Temas.FindAsync(id);
-        if (temaToDelete == null)
-        {
-            throw new TemaNotFoundException();
-        }
+        var tema = await _context.Temas.FindAsync(id);
+        if (tema == null) return false;
 
-        _context.Temas.Remove(temaToDelete);
+        _context.Temas.Remove(tema);
         await _context.SaveChangesAsync();
-    }
-}
-
-public class TemaNotFoundException : Exception
-{
-    public TemaNotFoundException() : base("Tema não encontrado.")
-    {
+        return true;
     }
 }

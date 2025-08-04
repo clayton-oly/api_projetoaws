@@ -18,7 +18,7 @@ namespace SocialApp.Services
         {
             return new TemaViewModel
             {
-                ID = tema.ID,
+                Id = tema.ID,
                 Descricao = tema.Descricao
             };
         }
@@ -27,40 +27,45 @@ namespace SocialApp.Services
         {
             return new Tema
             {
-                ID = temaViewModel.ID,
+                ID = temaViewModel.Id,
                 Descricao = temaViewModel.Descricao
             };
         }
 
-        public async Task<ActionResult<IEnumerable<TemaViewModel>>> GetAllTemasAsync()
+        public async Task<IEnumerable<TemaViewModel>> GetAllTemasAsync()
         {
-            var temas = await _temaRepository.GetAllTemasAsync();
+            var temas = await _temaRepository.GetAllTemasAsync() ?? new List<Tema>();
             return temas.Select(MapToViewModel).ToList();
         }
 
-        public async Task<ActionResult<TemaViewModel>> GetTemaByIdAsync(int id)
+        public async Task<TemaViewModel> GetTemaByIdAsync(int id)
         {
-            var tema = await _temaRepository.GetTemaByIdAsync(id);
-            return MapToViewModel(tema);
+            return await _temaRepository.GetTemaByIdAsync(id) is { } tema
+                ? MapToViewModel(tema)
+                : null;
         }
 
-        public async Task<ActionResult<TemaViewModel>> CreateTemaAsync(TemaViewModel temaViewModel)
+        public async Task<TemaViewModel> CreateTemaAsync(TemaViewModel temaViewModel)
         {
             var tema = MapToModel(temaViewModel);
+
             var createdTema = await _temaRepository.CreateTemaAsync(tema);
 
-            return MapToViewModel(createdTema);
+            return createdTema != null
+                ? MapToViewModel(createdTema)
+                : null;
         }
 
         public async Task UpdateTemaAsync(int id, TemaViewModel temaViewModel)
         {
             var tema = MapToModel(temaViewModel);
+
             await _temaRepository.UpdateTemaAsync(tema);
         }
 
-        public async Task DeleteTemaAsync(int id)
+        public async Task<bool> DeleteTemaAsync(int id)
         {
-            await _temaRepository.DeleteTemaAsync(id);
+            return await _temaRepository.DeleteTemaAsync(id);
         }
     }
 }

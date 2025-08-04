@@ -8,7 +8,7 @@ namespace SocialApp.Interfaces
         Task<Tema> GetTemaByIdAsync(int id);
         Task<Tema> CreateTemaAsync(Tema tema);
         Task UpdateTemaAsync(Tema tema);
-        Task DeleteTemaAsync(int id);
+        Task<bool> DeleteTemaAsync(int id);
 
     }
 }

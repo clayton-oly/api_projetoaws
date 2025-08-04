@@ -5,7 +5,7 @@ namespace SocialApp.ViewModels
 {
     public class PostagemViewModel
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         [MinLength(3, ErrorMessage = "O campo Título deve ter no mínimo 3 caracteres.")]
         public string? Titulo { get; set; }

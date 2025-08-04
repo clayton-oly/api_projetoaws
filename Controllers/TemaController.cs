@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Interfaces;
+using SocialApp.Services;
 using SocialApp.ViewModels;
 
 namespace SocialApp.Controllers
@@ -16,21 +17,23 @@ namespace SocialApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TemaViewModel>>> GetTemas()
+        public async Task<ActionResult<IEnumerable<TemaViewModel>>> GetAllTemas()
         {
             var temas = await _temaService.GetAllTemasAsync();
+
+            if (temas == null || !temas.Any())
+                return NoContent();
+
             return Ok(temas);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TemaViewModel>> GetTema(int id)
+        public async Task<ActionResult<TemaViewModel>> GetTemaById(int id)
         {
             var tema = await _temaService.GetTemaByIdAsync(id);
 
             if (tema == null)
-            {
-                return NotFound();
-            }
+                return NotFound("Tema não encontrado.");
 
             return tema;
         }
@@ -38,56 +41,37 @@ namespace SocialApp.Controllers
         [HttpPost]
         public async Task<ActionResult<TemaViewModel>> PostTema(TemaViewModel tema)
         {
-            try
-            {
-                var createdTema = await _temaService.CreateTemaAsync(tema);
-                return CreatedAtAction(nameof(GetTema), new { id = createdTema.Value.ID }, createdTema);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
-            }
+            var createdTema = await _temaService.CreateTemaAsync(tema);
+
+            if (createdTema == null)
+                return BadRequest("Erro ao criar tema.");
+
+            return CreatedAtAction(nameof(GetTemaById), new { id = createdTema.Id }, createdTema);
+
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTema(int id, TemaViewModel tema)
+        public async Task<IActionResult> PutTema(int id, TemaViewModel temaViewModel)
         {
-            if (id != tema.ID)
-            {
-                return BadRequest();
-            }
+            if (id != temaViewModel.Id)
+                return BadRequest("O id informado não corresponde ao tema.");
 
-            try
-            {
-                await _temaService.UpdateTemaAsync(id, tema);
-            }
-            catch (TemaNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
-            }
+            var temaExistente = await _temaService.GetTemaByIdAsync(id);
 
-            return NoContent();
+            if (temaExistente == null)
+                return NotFound("Usuário não encontrado.");
+
+            await _temaService.UpdateTemaAsync(id, temaViewModel);
+            return Ok("Tema atualizado com sucesso!");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTema(int id)
         {
-            try
-            {
-                await _temaService.DeleteTemaAsync(id);
-            }
-            catch (TemaNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
-            }
+            var sucesso = await _temaService.DeleteTemaAsync(id);
+
+            if (!sucesso)
+                return NotFound("Tema não encontrado.");
 
             return NoContent();
         }
