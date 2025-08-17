@@ -13,3 +13,5 @@ Properties/
 
 # Ignorar arquivos de compilação e solução
 SocialApp.sln
+
+appsettings.json
