@@ -21,7 +21,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PostagemViewModel>>> GetAllPostagens()
+        public async Task<ActionResult<IEnumerable<PostagemOutputViewModel>>> GetAllPostagens()
         {
             var postagens = await _postagemService.GetAllPostagensAsync();
 
@@ -33,7 +33,7 @@ namespace SocialApp.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostagemViewModel>> GetPostagmById(int id)
+        public async Task<ActionResult<PostagemOutputViewModel>> GetPostagmById(int id)
         {
             var postagem = await _postagemService.GetPostagemByIdAsync(id);
 
@@ -44,13 +44,12 @@ namespace SocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PostagemViewModel>> PostPostagem(PostagemViewModel postagemViewModel)
+        public async Task<ActionResult<PostagemOutputViewModel>> PostPostagem(PostagemInputViewModel postagemViewModel)
         {
-
-            if (postagemViewModel.Usuario.Id == 0 || postagemViewModel.TemaId == 0)
+            if (postagemViewModel.UsuarioId == 0 || postagemViewModel.TemaId == 0)
                 return BadRequest("Ids de usuário e tema são obrigatórios.");
 
-            var usuario = await _usuarioService.GetUsuarioByIdAsync(postagemViewModel.Usuario.Id);
+            var usuario = await _usuarioService.GetUsuarioByIdAsync(postagemViewModel.UsuarioId);
             if (usuario == null)
                 return NotFound("Usuário não encontrado.");
 
@@ -66,9 +65,9 @@ namespace SocialApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPostagem(int id, PostagemViewModel postagemViewModel)
+        public async Task<IActionResult> PutPostagem(int id, PostagemInputViewModel postagemViewModel)
         {
-            if (id != postagemViewModel.Id)
+            if (id != postagemViewModel.UsuarioId)
                 return BadRequest("O Id informado não corresponde ao usuário.");
 
             var postagemExistente = await _postagemService.GetPostagemByIdAsync(id);
@@ -76,7 +75,7 @@ namespace SocialApp.Controllers
             if (postagemExistente == null)
                 return NotFound("Postagem, não encontrada.");
 
-            await _postagemService.UpdatePostagemAsync(postagemViewModel);
+            await _postagemService.UpdatePostagemAsync(id, postagemViewModel);
             return Ok("Postagem atualizado com sucesso!");
         }
 

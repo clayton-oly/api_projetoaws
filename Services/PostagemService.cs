@@ -13,14 +13,15 @@ namespace SocialApp.Services
             _postagemRepository = postagemRepository;
         }
 
-        private PostagemViewModel MapToViewModel(Postagem postagem)
+        private PostagemOutputViewModel MapToViewModel(Postagem postagem)
         {
-            var postagemViewModel = new PostagemViewModel
+            var postagemViewModel = new PostagemOutputViewModel
             {
                 Id = postagem.ID,
                 Titulo = postagem.Titulo,
                 Texto = postagem.Texto,
                 TemaId = postagem.TemaID,
+                Data = postagem.Data.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
                 Usuario = new UsuarioOutputViewModel
                 {
                     Nome = postagem.Usuario.Nome,
@@ -31,31 +32,31 @@ namespace SocialApp.Services
             return postagemViewModel;
         }
 
-        private Postagem MapToModel(PostagemViewModel postagemViewModel)
+        private Postagem MapToModel(PostagemInputViewModel postagemViewModel)
         {
             return new Postagem
             {
-                ID = postagemViewModel.Id,
                 Titulo = postagemViewModel.Titulo,
                 Texto = postagemViewModel.Texto,
                 TemaID = postagemViewModel.TemaId,
+                UsuarioID = postagemViewModel.UsuarioId,
             };
         }
 
-        public async Task<IEnumerable<PostagemViewModel>> GetAllPostagensAsync()
+        public async Task<IEnumerable<PostagemOutputViewModel>> GetAllPostagensAsync()
         {
             var postagens = await _postagemRepository.GetAllPostagensAsync() ?? new List<Postagem>();
             return postagens.Select(MapToViewModel).ToList();
         }
 
-        public async Task<PostagemViewModel> GetPostagemByIdAsync(int id)
+        public async Task<PostagemOutputViewModel> GetPostagemByIdAsync(int id)
         {
             return await _postagemRepository.GetPostagemByIdAsync(id) is { } postagem
                 ? MapToViewModel(postagem)
                 : null;
         }
 
-        public async Task<PostagemViewModel> CreatePostagemAsync(PostagemViewModel postagemViewModel)
+        public async Task<PostagemOutputViewModel> CreatePostagemAsync(PostagemInputViewModel postagemViewModel)
         {
             var postagem = MapToModel(postagemViewModel);
 
@@ -66,9 +67,10 @@ namespace SocialApp.Services
                 : null;
         }
 
-        public async Task UpdatePostagemAsync(PostagemViewModel postagemViewModel)
+        public async Task UpdatePostagemAsync(int id, PostagemInputViewModel postagemViewModel)
         {
             var postagem = MapToModel(postagemViewModel);
+            postagem.ID = id;
 
             await _postagemRepository.UpdatePostagemAsync(postagem);
         }

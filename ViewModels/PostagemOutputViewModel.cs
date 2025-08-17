@@ -1,9 +1,8 @@
-﻿using SocialApp.model;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SocialApp.ViewModels
 {
-    public class PostagemViewModel
+    public class PostagemOutputViewModel
     {
         public int Id { get; set; }
 
@@ -13,7 +12,7 @@ namespace SocialApp.ViewModels
         [MinLength(10, ErrorMessage = "O campo Texto deve ter no mínimo 10 caracteres.")]
         public string? Texto { get; set; }
 
-        public DateTime Data { get; set; }
+        public string Data { get; set; }
 
         public UsuarioOutputViewModel Usuario { get; set; }
 

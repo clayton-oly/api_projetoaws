@@ -20,18 +20,21 @@ public class PostagemRepository : IPostagemRepository
 
     public async Task<Postagem> GetPostagemByIdAsync(int id)
     {
-        return await _context.Postagens.AsNoTracking().FirstOrDefaultAsync(p => p.ID == id);
+        return await _context.Postagens.Include(p => p.Usuario).AsNoTracking().FirstOrDefaultAsync(p => p.ID == id);
     }
 
     public async Task<Postagem> CreatePostagemAsync(Postagem postagem)
     {
+        postagem.Data = DateTime.UtcNow;
         _context.Postagens.Add(postagem);
         await _context.SaveChangesAsync();
-        return postagem;
+
+        return await GetPostagemByIdAsync(postagem.ID);
     }
 
     public async Task UpdatePostagemAsync(Postagem postagem)
     {
+        postagem.Data = DateTime.UtcNow;
         _context.Entry(postagem).State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
