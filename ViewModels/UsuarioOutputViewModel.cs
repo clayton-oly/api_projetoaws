@@ -1,6 +1,6 @@
 ﻿namespace SocialApp.ViewModels
 {
-    public class UsuarioViewModel
+    public class UsuarioOutputViewModel
     {
         public int Id { get; set; }
         public string? Nome { get; set; }

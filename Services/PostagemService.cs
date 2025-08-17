@@ -15,15 +15,20 @@ namespace SocialApp.Services
 
         private PostagemViewModel MapToViewModel(Postagem postagem)
         {
-            return new PostagemViewModel
+            var postagemViewModel = new PostagemViewModel
             {
                 Id = postagem.ID,
                 Titulo = postagem.Titulo,
                 Texto = postagem.Texto,
                 TemaId = postagem.TemaID,
-                UsuarioId = postagem.UsuarioID
-
+                Usuario = new UsuarioOutputViewModel
+                {
+                    Nome = postagem.Usuario.Nome,
+                    Foto = postagem.Usuario.Foto
+                }
             };
+
+            return postagemViewModel;
         }
 
         private Postagem MapToModel(PostagemViewModel postagemViewModel)
@@ -34,7 +39,6 @@ namespace SocialApp.Services
                 Titulo = postagemViewModel.Titulo,
                 Texto = postagemViewModel.Texto,
                 TemaID = postagemViewModel.TemaId,
-                UsuarioID= postagemViewModel.UsuarioId
             };
         }
 
@@ -56,8 +60,8 @@ namespace SocialApp.Services
             var postagem = MapToModel(postagemViewModel);
 
             var postagemCreate = await _postagemRepository.CreatePostagemAsync(postagem);
-            
-            return postagemCreate != null 
+
+            return postagemCreate != null
                 ? MapToViewModel(postagemCreate)
                 : null;
         }

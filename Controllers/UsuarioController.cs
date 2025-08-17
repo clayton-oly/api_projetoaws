@@ -16,7 +16,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UsuarioViewModel>>> GetAllUsuarios()
+        public async Task<ActionResult<IEnumerable<UsuarioOutputViewModel>>> GetAllUsuarios()
         {
             var usuarios = await _usuarioService.GetAllUsuariosAsync();
 
@@ -27,7 +27,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UsuarioViewModel>> GetUsuarioById(int id)
+        public async Task<ActionResult<UsuarioOutputViewModel>> GetUsuarioById(int id)
         {
             var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
 
@@ -38,7 +38,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UsuarioViewModel>> PostUsuario(UsuarioViewModel usuarioViewModel)
+        public async Task<ActionResult<UsuarioInputViewModel>> PostUsuario(UsuarioInputViewModel usuarioViewModel)
         {
             var createdUsuario = await _usuarioService.CreateUsuarioAsync(usuarioViewModel);
 
@@ -50,17 +50,15 @@ namespace SocialApp.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(int id, UsuarioViewModel usuarioViewModel)
+        public async Task<IActionResult> PutUsuario(int id, UsuarioInputViewModel usuarioViewModel)
         {
-            if (id != usuarioViewModel.Id)
-                return BadRequest("O Id informado não corresponde ao usuário.");
 
             var usuarioExistente = await _usuarioService.GetUsuarioByIdAsync(id);
 
             if (usuarioExistente == null)
                 return NotFound("Usuário não encontrado.");
 
-            await _usuarioService.UpdateUsuarioAsync(usuarioViewModel);
+            await _usuarioService.UpdateUsuarioAsync(usuarioExistente.Id, usuarioViewModel);
             return Ok("Usuário atualizado com sucesso!");
         }
 

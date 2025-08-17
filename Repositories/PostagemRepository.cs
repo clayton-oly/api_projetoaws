@@ -15,7 +15,7 @@ public class PostagemRepository : IPostagemRepository
 
     public async Task<IEnumerable<Postagem>> GetAllPostagensAsync()
     {
-        return await _context.Postagens.ToListAsync();
+        return await _context.Postagens.Include(p => p.Usuario).ToListAsync();
     }
 
     public async Task<Postagem> GetPostagemByIdAsync(int id)

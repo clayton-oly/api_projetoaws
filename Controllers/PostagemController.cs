@@ -47,10 +47,10 @@ namespace SocialApp.Controllers
         public async Task<ActionResult<PostagemViewModel>> PostPostagem(PostagemViewModel postagemViewModel)
         {
 
-            if (postagemViewModel.UsuarioId == 0 || postagemViewModel.TemaId == 0)
+            if (postagemViewModel.Usuario.Id == 0 || postagemViewModel.TemaId == 0)
                 return BadRequest("Ids de usuário e tema são obrigatórios.");
 
-            var usuario = await _usuarioService.GetUsuarioByIdAsync(postagemViewModel.UsuarioId);
+            var usuario = await _usuarioService.GetUsuarioByIdAsync(postagemViewModel.Usuario.Id);
             if (usuario == null)
                 return NotFound("Usuário não encontrado.");
 

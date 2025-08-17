@@ -4,10 +4,10 @@ namespace SocialApp.Interfaces
 {
     public interface IUsuarioService
     {
-        Task<IEnumerable<UsuarioViewModel>> GetAllUsuariosAsync();
-        Task<UsuarioViewModel> GetUsuarioByIdAsync(int id);
-        Task<UsuarioViewModel> CreateUsuarioAsync(UsuarioViewModel usuarioViewModel);
-        Task UpdateUsuarioAsync(UsuarioViewModel usuarioViewModel);
+        Task<IEnumerable<UsuarioOutputViewModel>> GetAllUsuariosAsync();
+        Task<UsuarioOutputViewModel> GetUsuarioByIdAsync(int id);
+        Task<UsuarioOutputViewModel> CreateUsuarioAsync(UsuarioInputViewModel usuarioViewModel);
+        Task UpdateUsuarioAsync(int id, UsuarioInputViewModel usuarioViewModel);
         Task<bool> DeleteUsuarioAsync(int id);
     }
 }

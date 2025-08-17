@@ -13,9 +13,9 @@ namespace SocialApp.Services
             _usuarioRepository = usuarioRepository;
         }
 
-        private UsuarioViewModel MapToViewModel(Usuario usuario)
+        private UsuarioOutputViewModel MapToViewModel(Usuario usuario)
         {
-            return new UsuarioViewModel
+            return new UsuarioOutputViewModel
             {
                 Id = usuario.ID,
                 Nome = usuario.Nome,
@@ -24,31 +24,31 @@ namespace SocialApp.Services
             };
         }
 
-        private Usuario MapToModel(UsuarioViewModel usuarioViewModel)
+        private Usuario MapToModel(UsuarioInputViewModel usuarioViewModel)
         {
             return new Usuario
             {
-                ID = usuarioViewModel.Id,
                 Nome = usuarioViewModel.Nome,
                 Email = usuarioViewModel.Email,
                 Foto = usuarioViewModel.Foto
             };
         }
 
-        public async Task<IEnumerable<UsuarioViewModel>> GetAllUsuariosAsync()
+
+        public async Task<IEnumerable<UsuarioOutputViewModel>> GetAllUsuariosAsync()
         {
             var usuarios = await _usuarioRepository.GetAllUsuariosAsync() ?? new List<Usuario>();
             return usuarios.Select(MapToViewModel).ToList();
         }
 
-        public async Task<UsuarioViewModel> GetUsuarioByIdAsync(int id)
+        public async Task<UsuarioOutputViewModel> GetUsuarioByIdAsync(int id)
         {
             return await _usuarioRepository.GetUsuarioByIdAsync(id) is { } usuario
                 ? MapToViewModel(usuario)
                 : null;
         }
 
-        public async Task<UsuarioViewModel> CreateUsuarioAsync(UsuarioViewModel usuarioViewModel)
+        public async Task<UsuarioOutputViewModel> CreateUsuarioAsync(UsuarioInputViewModel usuarioViewModel)
         {
             var usuario = MapToModel(usuarioViewModel);
 
@@ -59,9 +59,10 @@ namespace SocialApp.Services
                 : null;
         }
 
-        public async Task UpdateUsuarioAsync(UsuarioViewModel usuarioViewModel)
+        public async Task UpdateUsuarioAsync(int id, UsuarioInputViewModel usuarioViewModel)
         {
             var usuario = MapToModel(usuarioViewModel);
+            usuario.ID = id;
 
             await _usuarioRepository.UpdateUsuarioAsync(usuario);
         }
