@@ -1,15 +1,27 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using SocialApp.Data;
 using SocialApp.Interfaces;
 using SocialApp.Services;
-using System;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://127.0.0.1:5500")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Configuração do banco de dados
-builder.Services.AddDbContext<SocialAppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+                       ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<SocialAppDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // Injeção de dependência
 builder.Services.AddScoped<ITemaRepository, TemaRepository>();
@@ -19,64 +31,31 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ITemaService, TemaService>();
 builder.Services.AddScoped<IPostagemService, PostagemService>();
 
-// Swagger
-builder.Services.AddSwaggerGen(c =>
+
+// Controllers + JSON
+builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Projeto AWS API",
-        Version = "v1",
-        Description = "Esta é a documentação da minha API",
-        Contact = new OpenApiContact
-        {
-            Name = "Clayton Rocha",
-            Email = "clayton.will@gmail.com",
-            Url = new Uri("https://github.com/clayton-oly")
-        }
-    });
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.WriteIndented = true; // Opcional: deixa JSON mais legível
 });
 
-// Controllers + JSON config
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    });
-
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var context = scope.ServiceProvider.GetRequiredService<SocialAppDbContext>();
-        context.Database.Migrate();
-    }
-}
-
-
 // Middleware
+app.UseCors();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Projeto SocialApp API V1");
-});
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
+//usar autenticação futuramente:
+// app.UseAuthentication();
 
 app.UseAuthorization();
 
