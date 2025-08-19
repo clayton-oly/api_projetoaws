@@ -21,9 +21,9 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore SocialApp/SocialApp.sln
+      run: dotnet restore SocialApp.sln
 
     - name: Build
-      run: dotnet build SocialApp/SocialApp.sln --no-restore
+      run: dotnet build SocialApp.sln --no-restore
     - name: Test
       run: dotnet test SocialApp.Teste/SocialApp.Teste.csproj --no-build --verbosity normal
