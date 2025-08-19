@@ -11,7 +11,4 @@ Properties/
 *.log
 .DS_Store
 
-# Ignorar arquivos de compilação e solução
-SocialApp.sln
-
 appsettings.json
